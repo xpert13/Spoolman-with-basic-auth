@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  nginx:
+    image: nginx
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - 7912:7912
+    volumes:
+      - ./nginx/http.conf:/etc/nginx/conf.d/http.conf
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd
+    networks:
+      - app-network
+
+  spoolman:
+    image: ghcr.io/donkie/spoolman:latest
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./data
+        target: /home/app/.local/share/spoolman
+    environment:
+      - TZ=Europe/Kyiv
+    networks:
+      - app-network
+
+networks:
+    app-network:
+        driver: "bridge"
